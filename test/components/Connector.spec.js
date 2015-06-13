@@ -128,6 +128,32 @@ describe('React', () => {
       expect(spy.calls.length).toBe(3);
     });
 
+    it('throws if the `select` property returns anything other than a plain object', () => {
+      const errorMessage = 'The `select` property must return a plain JS object.';
+
+      function createTreeRenderer(selectResult) {
+        const redux = createRedux({ string: stringBuilder });
+
+        return () => {
+          TestUtils.renderIntoDocument(
+            <Provider redux={redux}>
+              {() => (
+                <Connector select={() => selectResult}>
+                  {() => <div />}
+                </Connector>
+              )}
+            </Provider>
+          );
+        };
+      }
+
+      expect(createTreeRenderer({})).toNotThrow();
+      expect(createTreeRenderer(null)).toThrow(errorMessage);
+      expect(createTreeRenderer(undefined)).toThrow(errorMessage);
+      expect(createTreeRenderer([])).toThrow(errorMessage);
+      expect(createTreeRenderer(() => {})).toThrow(errorMessage);
+    });
+
     it('passes `dispatch()` to child function', () => {
       const redux = createRedux({ test: () => 'test' });
 

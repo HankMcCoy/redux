@@ -1,3 +1,4 @@
+import isPlainObject from 'lodash/lang/isPlainObject';
 import identity from 'lodash/utility/identity';
 import shallowEqual from '../utils/shallowEqual';
 
@@ -59,6 +60,11 @@ export default function createConnector(React) {
     selectState({ context, props } = this) {
       const state = context.redux.getState();
       const slice = props.select(state);
+
+      if (!isPlainObject(slice)) {
+        throw new Error('The `select` property must return a plain JS object.');
+      }
+
       return { slice };
     }
 
